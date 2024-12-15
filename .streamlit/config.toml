@@ -1,2 +1,7 @@
-export PATH=$HOME/.local/bin:$PATH
-export LD_LIBRARY_PATH=$HOME/.local/lib:$LD_LIBRARY_PATH
+[server]
+headless = true
+port = 8501
+enableCORS = false
+
+[runner]
+magicEnabled = false
