@@ -1,4 +1,5 @@
-crewai==0.86.0
-crewai_tools==0.17.0
-load_dotenv==0.1.0
-langchain-huggingface==0.1.1
+crewai
+crewai_tools
+load_dotenv
+langchain-huggingface
+python==3.11.*
