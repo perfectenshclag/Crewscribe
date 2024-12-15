@@ -1,8 +1,8 @@
-# Import required modules
 import os
-from dotenv import load_dotenv 
+from dotenv import load_dotenv
+import streamlit as st
 from crewai import Agent, Task, Crew, Process
-from crewai_tools import YoutubeChannelSearchTool
+from crewai_tools import YoutubeChannelSearchTool, RagTool
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
 
@@ -11,6 +11,9 @@ load_dotenv()
 os.environ["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY")
 os.environ["HF_TOKEN"] = os.getenv("HF_TOKEN")
 
+# Streamlit app title
+st.title("YouTube Content Research & Writing Assistant")
+
 # Define Embedder Configuration
 embedder = {
     "provider": "huggingface",
@@ -18,13 +21,14 @@ embedder = {
         "model": "all-MiniLM-L6-v2",
     }
 }
+rag = RagTool()
 
 # Define LLM
 llm = ChatGroq(model="groq/llama3-8b-8192")
 
 # Define the YouTube Tool
 YT_tool = YoutubeChannelSearchTool(
-    youtube_channel_handle="@Fireship",
+    youtube_channel_handle="@{channel}",
     embedder=embedder,
 )
 
@@ -82,6 +86,21 @@ crew = Crew(
     share_crew=True,
 )
 
-# Execute Crew Process
-result = crew.kickoff(inputs={"topic": "What does he feel about AI?...answer only based on youtube videos dont add context yourself"})
-print(result)
+# Streamlit Interface
+st.header("Research a Topic and Generate Blog Content")
+topic = st.text_input("Enter the topic for research:")
+
+
+channel = st.text_input("Enter the YouTube channel's name:")
+
+if st.button("Generate Content"):
+    if topic:
+        with st.spinner("Processing... Please wait."):
+            result = crew.kickoff(inputs={"topic": topic})
+        st.success("Process completed!")
+        
+        # Display results
+        st.subheader("Generated Blog Content")
+        st.write(result)
+    else:
+        st.error("Please enter a topic before proceeding.")
